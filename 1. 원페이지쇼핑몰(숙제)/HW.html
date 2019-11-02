@@ -1,7 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!--title-->
   <title>Shopping_mall</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -11,66 +13,172 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
+  <!-- 구글폰트 -->
+  <link href="https://fonts.googleapis.com/css?family=Stylish&display=swap" rel="stylesheet">
+
+  <script type="text/javascript">
+    function order() {
+      let name = $('#order_name').val();
+      let count = $('#order_count').val();
+      let address = $('#order_address').val();
+      let phone = $('#order_phone').val();
+      let item = '소이캔들';
+
+      $.ajax({
+        type : "post",
+        url : "http://spartacodingclub.shop/order",
+        data : { name_give : name, count_give : count, address_give : address, phone_give : phone, item_give : item},
+        success : function(response){
+          if(response['result'] == 'success'){
+            alert('주문완료!');
+            window.location.reload();
+          } else {
+            response['result'] =='fail'
+          }
+        }
+      })
+    }
+
+    $(document).ready(function(){
+      $('#orders-box').html('');
+      listing();
+    });
+
+    function listing() {
+      $.ajax({
+        type: "GET",
+        url: "http://spartacodingclub.shop/order?item_give=소이캔들",
+        data: {},
+        success: function(response){
+         if (response['result'] == 'success') {
+           let orders = response['orders'];
+           for (let i = 0; i < orders.length; i++) {
+             make_card(orders[i]['item'],orders[i]['name'],orders[i]['count'],orders[i]['address'],orders[i]['phone'])
+           }
+         } else {
+           alert('사이트를 받아오지 못했습니다');
+         }
+       }
+     })
+    }
+
+    function make_card(item,name,count,address,phone) {
+      let temp_html = '<tr>\
+      <td>'+item+'</td>\
+      <td>'+name+'</td>\
+      <td>'+count+'</td>\
+      <td>'+address+'</td>\
+      <td>'+phone+'</td>\
+      </tr>';
+      $('#orders-box').append(temp_html);
+    }
+  </script>
+
   <style type="text/css">
    * {
     font-family: 'Stylish', sans-serif;
   }
-
   .title_text{
     font-size: medium;
     margin: auto;
+  }
+  .wrap{
+    margin: auto,25%;
+  }
+  .order {
+    text-align: center;
+  }
+  .orders {
+    margin-top: 50px;
   }
 
   div{
     margin: auto;
   }
 </style>
-<script type="text/javascript">
-  function cmp(){
-    alert('주문이 완료되었습니다.')
-  }
-</script>
+
 </head>
 
 <body>
-  <!--img src="" class=""-->
+  <div class="wrap">
+    <!--img src="" class=""-->
+    <div class="text-center mb-4">
+      <img class="mb-4" src="https://m.nemone.co.kr/web/product/big/201906/bb8be5751ebcc1d6da3eac431c8fb8e3.jpg" width="30%" height="30%">
+    </div>
+    <div class="info">
+      <div class="col-md-6 mb-3">
+        <h1> 소이캔들 <a class="title_text">가격 : 3,000원 / 개</a></h1>
+        <p>이 상품으로 말할 것 같으면 생일날 소이캔들을 불면 소원이 이루어진다는 마법의 향초 </p>
+      </div>
 
-  <div class="text-center mb-4">
-    <img class="mb-4" src="http://file2.instiz.net/data/file/20150114/a/0/e/a0e97e4897549124d222c4247d8374a9.jpg" width="50%" height="50%">
-  </div>
+      <div class="info">      
 
-  <div class="col-md-6 mb-3">
-    <h1>상품제목 <a class="title_text">가격 : 1,000,000원 / 개</a></h1>
+        <div class="input-group mb-2">
+          <div class="input-group-prepend">
+            <div class="input-group-text">주문자 성함</div>
+          </div>
+          <input type="text" class="form-control" id="order_name">
+        </div>
 
-    <p>이 상품으로 말할 것 같으면 용왕이 찾지 못한 토끼의 간을 찾아 빨간망토의 늑대와 아기 돼지 삼형제의 숨결이 고루 녹아 있는 먹으면 120세까지 살 수 있다는 이 상품</p>
-    <br>
-    <h1>주문하기</h1>
-  </div>
-  <div class="col-md-6 mb-3">
-    <label>주문자 성함 : </label>
-    <input type="text" class="form-control">
-  </div>
+        <div class="input-group mb-2">
+          <div class="input-group-prepend">
+            <div class="input-group-text">수량</div>
+          </div>
+          <select class="custom-select mr-sm-2" id="order_count">
+            <option>수량을 선택 해 주세요</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+          </select>
+        </div>
 
-  <div class="col-md-6 mb-3">
-    <label >수량 : </label>
-    <select claas = "form-control">
-      <option>수량</option>
-      <option>1(한정수량)</option>
-    </select>
-  </div>
+        <div class="input-group mb-2">
+          <div class="input-group-prepend">
+            <div class="input-group-text">주소</div>
+          </div>
+          <input type="text" class="form-control" id="order_adress">
+        </div>
 
-  <div class="col-md-6 mb-3">
-    <label>주소 : </label>
-    <input type="text" class="form-control">
-  </div>
 
-  <div class="col-md-6 mb-3">
-    <label>전화번호 : </label>
-    <input type="text" class="form-control">
-  </div>
+        <div class="input-group mb-2">
+          <div class="input-group-prepend">
+            <div class="input-group-text">전화번호</div>
+          </div>
+          <input type="text" class="form-control" id="order_phone">
+        </div>
 
-  <div class="col-md-6 mb-3">
-    <button onclick="cmp()" type="button" class="btn btn-outline-secondary">주문하기</button>
-  </div>
-</body>
-</html>
+
+        <div class="order">
+          <div class="col-md-6 Btn">
+            <button onclick="order()" type="button" class="btn btn-outline-secondary">주문하기</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="orders">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">상품명</th>
+              <th scope="col">이름</th>
+              <th scope="col">수량</th>
+              <th scope="col">주소</th>
+              <th scope="col">전화번호</th>
+            </tr>
+          </thead>
+          <tbody id="orders-box">
+            <tr>
+              <td>Mark</td>
+              <td>Otto</td>
+              <td>@mdo</td>
+              <td>Otto</td>
+              <td>@mdo</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+  </html>
